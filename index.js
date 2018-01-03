@@ -3,9 +3,9 @@
 var objectAssign = require('object-assign');
 var through = require('through2');
 var defaultPug = require('pug');
-var ext = require('gulp-util').replaceExtension;
-var PluginError = require('gulp-util').PluginError;
-var log = require('gulp-util').log;
+var replaceExt = require('replace-ext');
+var PluginError = require('plugin-error');
+var fancyLog = require('fancy-log');
 
 module.exports = function gulpPug(options) {
   var opts = objectAssign({}, options);
@@ -17,7 +17,7 @@ module.exports = function gulpPug(options) {
     var data = objectAssign({}, opts.data, file.data || {});
 
     opts.filename = file.path;
-    file.path = ext(file.path, opts.client ? '.js' : '.html');
+    file.path = replaceExt(file.path, opts.client ? '.js' : '.html');
 
     if (file.isStream()) {
       return cb(new PluginError('gulp-pug', 'Streaming not supported'));
@@ -28,7 +28,7 @@ module.exports = function gulpPug(options) {
         var compiled;
         var contents = String(file.contents);
         if (opts.verbose === true) {
-          log('compiling file', file.path);
+          fancyLog('compiling file', file.path);
         }
         if (opts.client) {
           compiled = pug.compileClient(contents, opts);
